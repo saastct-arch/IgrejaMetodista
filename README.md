@@ -29,6 +29,16 @@ Quando o time tiver a conta real do Mercado Pago pronta para produção, basta t
 
 Prazo de pedidos: bloqueado automaticamente após 27/07/2026, tanto na tela quanto na função do banco que cria o pedido.
 
+## Segurança (revisão de 02/07/2026)
+
+Rodei uma revisão de segurança no schema e nas Edge Functions. Corrigidos:
+
+- **Crítico — auto-promoção a admin**: a policy de UPDATE de `profiles` permitia, sem querer, que qualquer usuário alterasse a própria coluna `is_admin` direto pela API. Corrigido com privilégio de coluna (`authenticated` só pode alterar `full_name`/`phone`) + um trigger de defesa extra que reverte qualquer mudança de `is_admin` feita por quem não é admin. Testado: tentativa de auto-promoção agora falha com "permission denied"; edição do próprio nome continua funcionando normalmente.
+- **Open redirect no checkout do Mercado Pago**: o `origin` enviado pelo cliente para montar os `back_urls` só era validado com `startsWith("http")`. Agora há uma lista de domínios permitidos (`localhost`, `*.vercel.app`, e um lugar reservado para o domínio de produção) em `criar-preferencia-mp`.
+- **Hardening de funções**: `search_path` fixo em `touch_updated_at`; removido o `EXECUTE` que o Supabase concede por padrão a `anon`/`authenticated` em funções que não precisam disso (`sync_reservado`, `handle_new_user`, `protect_profile_admin_flag` só rodam via trigger; `criar_pedido`/`is_admin` continuam liberadas só para `authenticated`, que é quem realmente precisa).
+
+Não corrigido (achado de baixa severidade, aceito por ora): pedidos em dinheiro reservam o número imediatamente sem qualquer pagamento verificado, então em tese alguém poderia criar contas e travar vários números sem nunca pagar — hoje isso só se resolve cancelando manualmente pelo painel admin.
+
 ## Backend (Supabase)
 
 - `supabase/migrations/` — histórico do schema (perfis/admin, produtos, pedidos, itens, tabela de segredos). Aplicadas diretamente no projeto; guardadas aqui só como referência/documentação.

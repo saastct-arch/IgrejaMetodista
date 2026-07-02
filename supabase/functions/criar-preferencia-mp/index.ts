@@ -18,6 +18,27 @@ async function getSecret(admin: ReturnType<typeof createClient>, key: string): P
   return data?.value ?? null;
 }
 
+// Nunca confiamos cegamente no "origin" enviado pelo cliente para montar os
+// back_urls do Mercado Pago (isso seria um open redirect: qualquer chamador
+// autenticado poderia mandar o retorno do pagamento para um domínio de
+// phishing). Só aceitamos localhost (dev) e *.vercel.app / domínios de
+// produção conhecidos.
+const ALLOWED_ORIGIN_SUFFIXES = [".vercel.app"];
+const ALLOWED_ORIGIN_HOSTS = ["localhost", "127.0.0.1"];
+// Quando o domínio definitivo do site estiver definido, adicione-o aqui, ex.:
+// ALLOWED_ORIGIN_HOSTS.push("uniformes.igrejametodista.org.br");
+
+function isAllowedOrigin(origin: string): boolean {
+  try {
+    const u = new URL(origin);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return false;
+    if (ALLOWED_ORIGIN_HOSTS.includes(u.hostname)) return true;
+    return ALLOWED_ORIGIN_SUFFIXES.some((suffix) => u.hostname.endsWith(suffix));
+  } catch {
+    return false;
+  }
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: CORS_HEADERS });
@@ -82,7 +103,7 @@ Deno.serve(async (req: Request) => {
       }, 200);
     }
 
-    const siteOrigin = typeof origin === "string" && origin.startsWith("http") ? origin : SUPABASE_URL;
+    const siteOrigin = typeof origin === "string" && isAllowedOrigin(origin) ? origin : SUPABASE_URL;
 
     const mpItems = itens.map((it: any) => ({
       title: `${it.products?.nome ?? it.produto} - ${it.nome_camisa}${it.numero != null ? " (Nº " + it.numero + ")" : ""}`,
