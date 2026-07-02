@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meus Pedidos · Igreja Metodista</title>
+<link rel="icon" type="image/png" href="assets/img/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-row">
+    <div class="site-header-brand">
+      <img src="assets/img/logo.png" alt="Igreja Metodista">
+      <span class="name">Loja de Uniformes</span>
+    </div>
+    <nav class="site-header-nav">
+      <a href="pedido.html">Montar pedido</a>
+      <a href="meus-pedidos.html" class="active">Meus Pedidos</a>
+    </nav>
+    <div class="site-header-user">
+      <span id="user-nome">...</span><span id="user-admin-badge"></span>
+      <button class="btn btn-ghost" id="btn-sair">Sair</button>
+    </div>
+  </div>
+</header>
+
+<main class="site-main">
+  <div id="lista-pedidos">
+    <div class="empty"><div class="empty-title">Carregando seus pedidos...</div></div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/vendor/supabase.js"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/meus-pedidos.js"></script>
+</body>
+</html>

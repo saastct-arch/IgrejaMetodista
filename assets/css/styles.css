@@ -193,3 +193,27 @@ button{font-family:inherit;}
 
 .warn{font-size:12px;color:var(--red-dark);margin-top:6px;}
 .card + .card{margin-top:16px;}
+
+/* =========================================================
+   Meus pedidos
+   ========================================================= */
+.order-card{background:var(--white);border:1.5px solid var(--gray-light);border-radius:12px;margin-bottom:14px;padding:18px;box-shadow:var(--shadow-card);}
+.order-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+.order-buyer{font-family:var(--font-display);font-weight:600;font-size:16px;}
+.order-meta{font-size:12.5px;color:#888;margin-top:3px;}
+.badge{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;padding:5px 10px;border-radius:20px;white-space:nowrap;display:inline-block;}
+.badge.pago{background:var(--success-bg);color:var(--success);}
+.badge.parcial{background:var(--amber-bg);color:var(--amber);}
+.badge.standby{background:var(--amber-bg);color:var(--amber);}
+.badge.aguardando_pagamento{background:var(--amber-bg);color:var(--amber);}
+.badge.cancelado{background:var(--danger-bg);color:var(--red-dark);}
+.order-itens{background:var(--paper);border-radius:8px;padding:4px 14px;margin-bottom:12px;}
+.order-item-row{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-bottom:1px dashed var(--gray-light);font-size:13px;}
+.order-item-row:last-child{border-bottom:none;}
+.order-item-tag{font-family:var(--font-mono);font-size:11px;color:var(--red);font-weight:600;white-space:nowrap;}
+.order-bottom{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+.order-value{font-family:var(--font-mono);font-size:14px;font-weight:600;}
+.order-note{font-size:12.5px;color:#888;margin-top:10px;line-height:1.5;}
+.order-note.danger{color:var(--red-dark);}
+.empty{text-align:center;padding:60px 20px;color:#999;}
+.empty-title{font-family:var(--font-display);font-size:19px;color:#555;margin-bottom:8px;}
