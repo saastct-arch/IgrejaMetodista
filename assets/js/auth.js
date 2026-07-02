@@ -105,7 +105,7 @@ document.getElementById('link-esqueci-senha').addEventListener('click', async ()
     return;
   }
   const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.href.replace(/index\.html.*$/, 'index.html')
+    redirectTo: window.location.href.replace(/index\.html.*$/, 'redefinir-senha.html')
   });
   if(error){
     showToast(traduzirErro(error.message), true);
