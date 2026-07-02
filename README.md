@@ -8,6 +8,11 @@ Site de vendas dos uniformes do time da Igreja Metodista (Uniforme Equipe e Cami
 - `redefinir-senha.html` — redefinição de senha (link enviado por e-mail).
 - `pedido.html` — Montar pedido: escolha de produto (Uniforme Equipe / Camisa Torcida), tamanho, nome, número (2–99, exclusivo por uniforme completo), carrinho e checkout.
 - `pedido-confirmado.html` — página de retorno do Mercado Pago, mostra o status do pagamento.
+- `meus-pedidos.html` — histórico dos próprios pedidos do comprador, com status e botão para retomar um pagamento pendente.
+- `resumo.html` — transparência financeira: totais agregados de todos os compradores (pedidos, arrecadado, a receber, peças por tamanho), sem expor dados pessoais. Visível a qualquer usuário logado.
+- `admin.html` — painel restrito aos e-mails admin: lista todos os pedidos com contato via WhatsApp, confirma pagamento em dinheiro, edita status/valor pago, cancela pedidos, alerta conflito de número e exporta CSV.
+
+O link "Admin" só aparece na navegação para quem tem `is_admin = true`; a página em si também redireciona quem não é admin de volta para `pedido.html`.
 
 Backend: Supabase (autenticação por e-mail/senha, banco de dados com Row Level Security, e Edge Functions para o pagamento).
 
@@ -29,8 +34,10 @@ Prazo de pedidos: bloqueado automaticamente após 27/07/2026, tanto na tela quan
 - `supabase/migrations/` — histórico do schema (perfis/admin, produtos, pedidos, itens, tabela de segredos). Aplicadas diretamente no projeto; guardadas aqui só como referência/documentação.
 - `supabase/functions/` — código das Edge Functions `criar-preferencia-mp` e `mp-webhook`, já implantadas no projeto.
 
-## Próximas páginas (a confirmar com o cliente)
+## Próximos passos possíveis
 
-- Meus Pedidos
-- Resumo de arrecadação (transparência financeira)
-- Área administrativa (todos os pedidos, confirmar pagamento em dinheiro, exportar CSV)
+Todas as páginas do plano inicial estão prontas. Ideias para depois, se fizer sentido:
+
+- Tela dedicada de redefinição de e-mail admin / gestão de quem é admin pela interface (hoje é só por SQL).
+- Notificação (e-mail/WhatsApp) automática quando um pedido é confirmado.
+- Página de "sobre o time" / fotos, se quiserem dar mais cara de loja à `pedido.html`.

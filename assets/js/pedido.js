@@ -36,6 +36,7 @@ function escapeHtml(s){
   document.getElementById('user-nome').textContent = (perfil && perfil.full_name) || usuario.email;
   if(perfil && perfil.is_admin){
     document.getElementById('user-admin-badge').innerHTML = '<span class="badge-admin">admin</span>';
+    document.querySelector('.site-header-nav').insertAdjacentHTML('beforeend', '<a href="admin.html">Admin</a>');
   }
 
   if(new Date() > PRAZO_PEDIDOS){

@@ -12,6 +12,7 @@ function fmtBRL(v){
   document.getElementById('user-nome').textContent = (perfil && perfil.full_name) || usuario.email;
   if(perfil && perfil.is_admin){
     document.getElementById('user-admin-badge').innerHTML = '<span class="badge-admin">admin</span>';
+    document.querySelector('.site-header-nav').insertAdjacentHTML('beforeend', '<a href="admin.html">Admin</a>');
   }
 
   const [{ data: geral, error: geralError }, { data: porTamanho, error: tamanhoError }] = await Promise.all([
