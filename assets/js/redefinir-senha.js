@@ -85,5 +85,5 @@ document.getElementById('form-nova-senha').addEventListener('submit', async (e)=
   }
 
   showToast('Senha atualizada com sucesso!');
-  setTimeout(()=>{ window.location.href = 'dashboard.html'; }, 1200);
+  setTimeout(()=>{ window.location.href = 'pedido.html'; }, 1200);
 });

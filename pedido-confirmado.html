@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Confirmação do pedido · Igreja Metodista</title>
+<link rel="icon" type="image/png" href="assets/img/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-row">
+    <div class="site-header-brand">
+      <img src="assets/img/logo.png" alt="Igreja Metodista">
+      <span class="name">Loja de Uniformes</span>
+    </div>
+    <nav class="site-header-nav">
+      <a href="pedido.html">Montar pedido</a>
+    </nav>
+    <div class="site-header-user">
+      <button class="btn btn-ghost" id="btn-sair">Sair</button>
+    </div>
+  </div>
+</header>
+
+<main class="site-main">
+  <div class="card" style="max-width:520px;margin:0 auto;text-align:center;">
+    <p class="placeholder-title" id="titulo">Verificando seu pagamento...</p>
+    <p class="placeholder-text" id="texto">Só um instante, isso pode levar alguns segundos.</p>
+    <a href="pedido.html" class="btn btn-primary" style="display:inline-block;text-decoration:none;margin-top:18px;max-width:260px;">Voltar para pedidos</a>
+  </div>
+</main>
+
+<script src="assets/js/vendor/supabase.js"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script>
+document.getElementById('btn-sair').addEventListener('click', async ()=>{
+  await supabaseClient.auth.signOut();
+  window.location.href = 'index.html';
+});
+
+function fmtBRL(v){
+  return 'R$ ' + (v||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+(async function(){
+  const { data:{ session } } = await supabaseClient.auth.getSession();
+  if(!session){ window.location.href = 'index.html'; return; }
+
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get('order');
+  const titulo = document.getElementById('titulo');
+  const texto = document.getElementById('texto');
+
+  if(!orderId){
+    titulo.textContent = 'Pedido não encontrado';
+    texto.textContent = 'Não recebemos o identificador do pedido. Volte para "Montar pedido" e tente novamente.';
+    return;
+  }
+
+  async function buscarPedido(){
+    const { data, error } = await supabaseClient
+      .from('orders').select('status, valor_total, payment_method').eq('id', orderId).single();
+    return error ? null : data;
+  }
+
+  let pedido = await buscarPedido();
+  let tentativas = 0;
+  while(pedido && pedido.status === 'aguardando_pagamento' && tentativas < 7){
+    await new Promise(r => setTimeout(r, 2000));
+    pedido = await buscarPedido();
+    tentativas++;
+  }
+
+  if(!pedido){
+    titulo.textContent = 'Pedido não encontrado';
+    texto.textContent = 'Não conseguimos localizar esse pedido na sua conta.';
+    return;
+  }
+
+  if(pedido.status === 'pago'){
+    titulo.textContent = 'Pagamento aprovado! 🎉';
+    texto.textContent = `Seu pedido de ${fmtBRL(pedido.valor_total)} foi confirmado. Obrigado por apoiar o time!`;
+  } else if(pedido.status === 'cancelado'){
+    titulo.textContent = 'Pagamento não aprovado';
+    texto.textContent = 'O pagamento não foi concluído. Você pode tentar novamente ou escolher pagar em dinheiro.';
+  } else {
+    titulo.textContent = 'Pagamento em processamento';
+    texto.textContent = 'Ainda estamos aguardando a confirmação do Mercado Pago. Assim que for aprovado, seu pedido será atualizado automaticamente.';
+  }
+})();
+</script>
+</body>
+</html>

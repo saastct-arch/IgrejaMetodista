@@ -32,7 +32,7 @@ function traduzirErro(msg){
 // Se já estiver logado, vai direto para a área interna
 (async function checarSessao(){
   const { data:{ session } } = await supabaseClient.auth.getSession();
-  if(session){ window.location.href = 'dashboard.html'; }
+  if(session){ window.location.href = 'pedido.html'; }
 })();
 
 // ---- login ----
@@ -53,7 +53,7 @@ document.getElementById('form-login').addEventListener('submit', async (e)=>{
     errEl.textContent = traduzirErro(error.message);
     return;
   }
-  window.location.href = 'dashboard.html';
+  window.location.href = 'pedido.html';
 });
 
 // ---- cadastro ----
@@ -90,7 +90,7 @@ document.getElementById('form-cadastro').addEventListener('submit', async (e)=>{
   }
 
   if(data.session){
-    window.location.href = 'dashboard.html';
+    window.location.href = 'pedido.html';
   } else {
     showToast('Conta criada! Verifique seu e-mail para confirmar o acesso.');
     ativarAba('login');
