@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Igreja Metodista · Loja de Uniformes</title>
+<link rel="icon" type="image/png" href="assets/img/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<div class="auth-page">
+  <aside class="auth-brand">
+    <div class="auth-brand-inner">
+      <img src="assets/img/logo.png" alt="Igreja Metodista" class="auth-logo">
+      <p class="eyebrow">Igreja Metodista · Time / Uniformes</p>
+      <h1>Vista a camisa.<br>Apoie o nosso time.</h1>
+      <p class="auth-brand-sub">Peça o uniforme completo do time ou a camisa da torcida, escolha seu número e acompanhe seu pedido do início ao fim.</p>
+      <ul class="auth-highlights">
+        <li>Uniforme de jogo completo, personalizado com nome e número</li>
+        <li>Camisa da torcida com o seu nome</li>
+        <li>Acompanhe seus pedidos e o status do pagamento</li>
+        <li>Transparência total: veja quanto já foi arrecadado pelo time</li>
+      </ul>
+      <div class="auth-deadline">
+        <span class="deadline-label">Pedidos abertos até</span>
+        <span class="deadline-date">27 de julho de 2026</span>
+      </div>
+    </div>
+  </aside>
+
+  <main class="auth-form-side">
+    <div class="auth-card">
+      <div class="auth-card-header">
+        <img src="assets/img/logo.png" alt="Igreja Metodista" class="mobile-logo">
+        <h2>Loja de Uniformes</h2>
+        <p>Entre com sua conta ou cadastre-se para fazer seu pedido</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login" type="button">Entrar</button>
+        <button class="auth-tab" data-tab="cadastro" type="button">Criar conta</button>
+      </div>
+
+      <!-- LOGIN -->
+      <form class="auth-form active" id="form-login" novalidate>
+        <div class="field">
+          <label for="login-email">E-mail</label>
+          <input type="email" id="login-email" placeholder="seuemail@exemplo.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="login-senha">Senha</label>
+          <input type="password" id="login-senha" placeholder="Sua senha" autocomplete="current-password" required>
+        </div>
+        <div class="auth-form-forgot">
+          <a id="link-esqueci-senha">Esqueci minha senha</a>
+        </div>
+        <div class="field-error" id="login-error"></div>
+        <button type="submit" class="btn btn-primary" id="btn-login">Entrar</button>
+        <p class="auth-form-alt">Ainda não tem conta? <a data-tab="cadastro">Cadastre-se</a></p>
+      </form>
+
+      <!-- CADASTRO -->
+      <form class="auth-form" id="form-cadastro" novalidate>
+        <div class="field">
+          <label for="cad-nome">Nome completo</label>
+          <input type="text" id="cad-nome" placeholder="Como podemos te chamar" autocomplete="name" required>
+        </div>
+        <div class="field">
+          <label for="cad-telefone">WhatsApp / Contato</label>
+          <input type="text" id="cad-telefone" placeholder="(31) 90000-0000" autocomplete="tel" required>
+        </div>
+        <div class="field">
+          <label for="cad-email">E-mail</label>
+          <input type="email" id="cad-email" placeholder="seuemail@exemplo.com" autocomplete="email" required>
+        </div>
+        <div class="field">
+          <label for="cad-senha">Senha <span class="hint">mínimo de 6 caracteres</span></label>
+          <input type="password" id="cad-senha" placeholder="Crie uma senha" autocomplete="new-password" required minlength="6">
+        </div>
+        <div class="field-error" id="cadastro-error"></div>
+        <button type="submit" class="btn btn-primary" id="btn-cadastro">Criar conta</button>
+        <p class="auth-form-alt">Já tem conta? <a data-tab="login">Entrar</a></p>
+      </form>
+
+      <p class="auth-footnote">Uso da marca da Igreja Metodista em uniformes, camisas e outros objetos requer autorização da Sede Nacional.</p>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="assets/js/vendor/supabase.js"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script src="assets/js/auth.js"></script>
+</body>
+</html>

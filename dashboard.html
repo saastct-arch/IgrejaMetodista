@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Igreja Metodista · Loja de Uniformes</title>
+<link rel="icon" type="image/png" href="assets/img/logo.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="site-header-row">
+    <div class="site-header-brand">
+      <img src="assets/img/logo.png" alt="Igreja Metodista">
+      <span class="name">Loja de Uniformes</span>
+    </div>
+    <div class="site-header-user">
+      <span id="user-nome">...</span><span id="user-admin-badge"></span>
+      <button class="btn btn-ghost" id="btn-sair">Sair</button>
+    </div>
+  </div>
+</header>
+
+<main class="site-main">
+  <div class="card">
+    <p class="placeholder-title">Login realizado com sucesso 🎉</p>
+    <p class="placeholder-text">
+      Esta é uma página temporária. As próximas telas — Montar pedido (Uniforme Equipe / Camisa Torcida),
+      Meus Pedidos e o Resumo de transparência financeira — ainda serão construídas.
+    </p>
+  </div>
+</main>
+
+<script src="assets/js/vendor/supabase.js"></script>
+<script src="assets/js/supabase-client.js"></script>
+<script>
+(async function(){
+  const { data:{ session } } = await supabaseClient.auth.getSession();
+  if(!session){ window.location.href = 'index.html'; return; }
+
+  const { data: perfil } = await supabaseClient
+    .from('profiles')
+    .select('full_name, is_admin')
+    .eq('id', session.user.id)
+    .single();
+
+  document.getElementById('user-nome').textContent = (perfil && perfil.full_name) || session.user.email;
+  if(perfil && perfil.is_admin){
+    document.getElementById('user-admin-badge').innerHTML = '<span class="badge-admin">admin</span>';
+  }
+})();
+
+document.getElementById('btn-sair').addEventListener('click', async ()=>{
+  await supabaseClient.auth.signOut();
+  window.location.href = 'index.html';
+});
+</script>
+</body>
+</html>
