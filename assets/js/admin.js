@@ -148,7 +148,7 @@ function renderCard(p){
     <div class="order-itens">${itensHtml}</div>
     <div class="order-bottom">
       <div class="order-value">${fmtBRL(p.valor_total)}${restante>0 && p.status!=='cancelado' ? ` <span style="color:var(--red-dark);font-weight:400;">· falta ${fmtBRL(restante)}</span>` : ''}</div>
-      <div style="display:flex;gap:8px;">${acoes}</div>
+      <div class="order-actions">${acoes}</div>
     </div>
     ${valorPagoEdit}
   </div>`;

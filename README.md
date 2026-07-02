@@ -1,6 +1,6 @@
-# Igreja Metodista · Loja de Uniformes
+# Metodista Timóteo F.C. · Loja de Uniformes
 
-Site de vendas dos uniformes do time da Igreja Metodista (Uniforme Equipe e Camisa Torcida).
+Site de vendas dos uniformes do time Metodista Timóteo F.C., da Igreja Metodista (Uniforme Equipe e Camisa Torcida).
 
 ## Status atual
 
@@ -21,11 +21,7 @@ Backend: Supabase (autenticação por e-mail/senha, banco de dados com Row Level
 - **Dinheiro**: o pedido é criado com status `standby` (número já fica reservado) e aguarda o admin confirmar o recebimento — isso ainda será feito na futura página de admin.
 - **Mercado Pago (Checkout Pro)**: redireciona para a página de pagamento do Mercado Pago. A confirmação chega por webhook (`mp-webhook`), que consulta o pagamento direto na API do Mercado Pago antes de marcar o pedido como pago (nunca confia no retorno do navegador).
 
-**Credenciais do Mercado Pago:** configuradas com o Access Token de um usuário de teste (`APP_USR-...`), guardado na tabela `app_secrets` (só o `service_role` das Edge Functions consegue ler; nunca fica em nenhum arquivo do repositório). Como o vendedor é uma conta de teste, todo pagamento feito é automaticamente simulado — nenhum valor real é cobrado. Para testar uma compra até o fim, use um cartão de teste do Mercado Pago no checkout, por exemplo:
-  - Mastercard `5031 4332 1540 6351`, CVV `123`, validade `11/30`
-  - Nome do titular `APRO` → pagamento aprovado · `OTHE` → recusado · `CONT` → pendente
-
-Quando o time tiver a conta real do Mercado Pago pronta para produção, basta trocar o valor de `MP_ACCESS_TOKEN` na tabela `app_secrets` pelo Access Token de produção (`APP_USR-...` da conta real).
+**Credenciais do Mercado Pago: PRODUÇÃO ATIVA (02/07/2026).** O `MP_ACCESS_TOKEN` na tabela `app_secrets` é o Access Token real da conta do time — pagamentos por Cartão/Pix a partir de agora cobram dinheiro de verdade. O token nunca fica em nenhum arquivo do repositório, só no banco, e só o `service_role` das Edge Functions consegue lê-lo. Public Key, Client ID e Client Secret enviados junto **não foram armazenados**, porque a integração atual (Checkout Pro) só precisa do Access Token.
 
 Prazo de pedidos: bloqueado automaticamente após 27/07/2026, tanto na tela quanto na função do banco que cria o pedido.
 
@@ -38,6 +34,12 @@ Rodei uma revisão de segurança no schema e nas Edge Functions. Corrigidos:
 - **Hardening de funções**: `search_path` fixo em `touch_updated_at`; removido o `EXECUTE` que o Supabase concede por padrão a `anon`/`authenticated` em funções que não precisam disso (`sync_reservado`, `handle_new_user`, `protect_profile_admin_flag` só rodam via trigger; `criar_pedido`/`is_admin` continuam liberadas só para `authenticated`, que é quem realmente precisa).
 
 Não corrigido (achado de baixa severidade, aceito por ora): pedidos em dinheiro reservam o número imediatamente sem qualquer pagamento verificado, então em tese alguém poderia criar contas e travar vários números sem nunca pagar — hoje isso só se resolve cancelando manualmente pelo painel admin.
+
+## Design (revisão de 02/07/2026)
+
+- Tipografia trocada de Source Serif 4 + IBM Plex Sans + IBM Plex Mono para uma família única, **Inter**, em todo o site — visual mais sóbrio/corporativo, menos "template pronto".
+- Marca do time em toda a navegação e títulos de página: **Metodista Timóteo F.C.** (antes "Loja de Uniformes").
+- Mobile: no login/cadastro/redefinição de senha, o formulário agora aparece antes do painel de marca (antes era preciso rolar a tela toda pra achar o campo de e-mail). No cabeçalho das páginas internas, a navegação virou uma faixa de abas rolável abaixo da marca, em vez de espremer tudo numa única linha. Painel admin com botões de ação empilhados em largura total no celular.
 
 ## Backend (Supabase)
 
