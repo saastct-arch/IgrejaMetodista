@@ -82,19 +82,29 @@ document.getElementById('form-cadastro').addEventListener('submit', async (e)=>{
     email, password: senha,
     options: { data: { full_name: nome, phone: telefone } }
   });
-  btn.disabled = false; btn.textContent = 'Criar conta';
 
   if(error){
+    btn.disabled = false; btn.textContent = 'Criar conta';
     errEl.textContent = traduzirErro(error.message);
     return;
   }
 
   if(data.session){
     window.location.href = 'pedido.html';
-  } else {
-    showToast('Conta criada! Verifique seu e-mail para confirmar o acesso.');
-    ativarAba('login');
+    return;
   }
+
+  // A conta já é confirmada automaticamente no banco (sem precisar clicar
+  // em link de e-mail); só falta entrar com a senha que acabou de criar.
+  const { error: loginError } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
+  btn.disabled = false; btn.textContent = 'Criar conta';
+
+  if(loginError){
+    showToast('Conta criada! Você já pode entrar com seu e-mail e senha.');
+    ativarAba('login');
+    return;
+  }
+  window.location.href = 'pedido.html';
 });
 
 // ---- esqueci minha senha ----

@@ -4,7 +4,7 @@ Site de vendas dos uniformes do time Metodista Timóteo F.C., da Igreja Metodist
 
 ## Status atual
 
-- `index.html` — login e cadastro.
+- `index.html` — login e cadastro. Cadastro **não exige clique em link de confirmação por e-mail**: um trigger no banco (`auto_confirm_email_on_signup`) confirma o e-mail automaticamente na hora da criação da conta, e o cliente já entra em seguida com a senha recém-criada.
 - `redefinir-senha.html` — redefinição de senha (link enviado por e-mail).
 - `pedido.html` — Montar pedido: escolha de produto (Uniforme Equipe / Camisa Torcida), tamanho, nome, número (2–99, exclusivo por uniforme completo), carrinho e checkout.
 - `pedido-confirmado.html` — página de retorno do Mercado Pago, mostra o status do pagamento.
