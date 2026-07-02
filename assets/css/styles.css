@@ -217,3 +217,22 @@ button{font-family:inherit;}
 .order-note.danger{color:var(--red-dark);}
 .empty{text-align:center;padding:60px 20px;color:#999;}
 .empty-title{font-family:var(--font-display);font-size:19px;color:#555;margin-bottom:8px;}
+
+/* =========================================================
+   Resumo de arrecadação
+   ========================================================= */
+.page-intro{margin:0 0 22px;color:#666;font-size:13.5px;line-height:1.6;max-width:640px;}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+@media(max-width:720px){.stat-grid{grid-template-columns:repeat(2,1fr);}}
+.stat{background:var(--white);border:1px solid var(--gray-light);border-radius:10px;padding:16px 18px;box-shadow:var(--shadow-card);}
+.stat-label{font-family:var(--font-mono);font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:#888;margin-bottom:8px;}
+.stat-value{font-family:var(--font-display);font-size:24px;font-weight:600;color:var(--ink);}
+.stat-value.red{color:var(--red-dark);}
+.stat-value.green{color:var(--success);}
+
+.progress-track{background:var(--gray-light);border-radius:20px;height:10px;overflow:hidden;margin-top:14px;}
+.progress-fill{background:linear-gradient(90deg,var(--red),var(--red-dark));height:100%;border-radius:20px;transition:width .4s ease;}
+
+.size-breakdown{display:flex;flex-wrap:wrap;gap:8px;}
+.size-chip{font-family:var(--font-mono);font-size:12.5px;background:var(--paper);border:1.5px solid var(--gray-light);border-radius:20px;padding:7px 14px;display:flex;gap:6px;}
+.size-chip b{color:var(--red);}
