@@ -4,9 +4,8 @@ Site de vendas dos uniformes do time Metodista Timóteo F.C., da Igreja Metodist
 
 ## Status atual
 
-- `index.html` — login e cadastro. Cadastro **não exige clique em link de confirmação por e-mail**: um trigger no banco (`auto_confirm_email_on_signup`) confirma o e-mail automaticamente na hora da criação da conta, e o cliente já entra em seguida com a senha recém-criada.
-- `redefinir-senha.html` — redefinição de senha (link enviado por e-mail).
-- `pedido.html` — Montar pedido: escolha de produto (Uniforme Equipe / Camisa Torcida), tamanho, nome, número (2–99, exclusivo por uniforme completo), carrinho e checkout.
+- `index.html` — login e cadastro **só com nome e WhatsApp, sem e-mail nem senha visíveis**. Por baixo dos panos a conta continua sendo e-mail+senha no Supabase Auth (é o que sustenta toda a RLS já construída), só que e-mail e senha são derivados de forma determinística a partir do número de telefone (`wa<dígitos>@metodistatimoteo.app` / `tm-<dígitos>-uniforme`) — a pessoa nunca digita isso. Cadastro também não exige clique em link de confirmação por e-mail (trigger `auto_confirm_email_on_signup`).
+- `pedido.html` — Montar pedido: dois botões (Uniforme Completo / Camisa Torcida) que revelam a configuração da peça (tamanho, nome, número 2–99 quando aplicável). Carrinho vira um painel lateral (estilo FARM Rio), aberto por um botão flutuante com contador. Nome/WhatsApp do comprador são preenchidos automaticamente com os dados do cadastro — não precisa digitar de novo no checkout.
 - `pedido-confirmado.html` — página de retorno do Mercado Pago, mostra o status do pagamento.
 - `meus-pedidos.html` — histórico dos próprios pedidos do comprador, com status e botão para retomar um pagamento pendente.
 - `resumo.html` — transparência financeira: totais agregados de todos os compradores (pedidos, arrecadado, a receber, peças por tamanho), sem expor dados pessoais. Visível a qualquer usuário logado.
@@ -14,7 +13,9 @@ Site de vendas dos uniformes do time Metodista Timóteo F.C., da Igreja Metodist
 
 O link "Admin" só aparece na navegação para quem tem `is_admin = true`; a página em si também redireciona quem não é admin de volta para `pedido.html`.
 
-Backend: Supabase (autenticação por e-mail/senha, banco de dados com Row Level Security, e Edge Functions para o pagamento).
+Backend: Supabase (autenticação, banco de dados com Row Level Security, e Edge Functions para o pagamento).
+
+**Sobre o login só com WhatsApp:** como pedido explícito, entrar no site não exige senha nem código de verificação — só o número. Na prática isso significa que qualquer pessoa que souber o WhatsApp de alguém consegue acessar a conta dela (ver pedidos, e em tese finalizar uma compra em nome dela). Para o contexto do time isso foi aceito como uma troca consciente de segurança por simplicidade. Se no futuro isso incomodar, dá pra evoluir para um código enviado por SMS/WhatsApp sem precisar redesenhar o resto do sistema.
 
 ### Pagamento
 
@@ -39,7 +40,8 @@ Não corrigido (achado de baixa severidade, aceito por ora): pedidos em dinheiro
 
 - Tipografia trocada de Source Serif 4 + IBM Plex Sans + IBM Plex Mono para uma família única, **Inter**, em todo o site — visual mais sóbrio/corporativo, menos "template pronto".
 - Marca do time em toda a navegação e títulos de página: **Metodista Timóteo F.C.** (antes "Loja de Uniformes").
-- Mobile: no login/cadastro/redefinição de senha, o formulário agora aparece antes do painel de marca (antes era preciso rolar a tela toda pra achar o campo de e-mail). No cabeçalho das páginas internas, a navegação virou uma faixa de abas rolável abaixo da marca, em vez de espremer tudo numa única linha. Painel admin com botões de ação empilhados em largura total no celular.
+- Mobile: no login/cadastro, o painel de marca ("Vista a camisa. Apoie o nosso time.") aparece primeiro, com o formulário logo abaixo. No cabeçalho das páginas internas, a navegação virou uma faixa de abas rolável abaixo da marca, em vez de espremer tudo numa única linha. Painel admin com botões de ação empilhados em largura total no celular.
+- `pedido.html`: carrinho flutuante (botão fixo no canto + painel lateral que desliza da direita), no estilo de e-commerces como a FARM Rio, no lugar do card de carrinho fixo no fim da página.
 
 ## Backend (Supabase)
 

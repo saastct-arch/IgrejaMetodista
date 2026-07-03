@@ -1,6 +1,7 @@
 const PRAZO_PEDIDOS = new Date('2026-07-27T23:59:59-03:00');
 
 let usuario = null;
+let perfil = null;
 let produtos = {};          // { completo: {nome,descricao,preco,tem_numero}, torcida: {...} }
 let produtoAtual = null;
 let numeroSelecionado = null;
@@ -31,8 +32,9 @@ function escapeHtml(s){
   if(!session){ window.location.href = 'index.html'; return; }
   usuario = session.user;
 
-  const { data: perfil } = await supabaseClient
-    .from('profiles').select('full_name, is_admin').eq('id', usuario.id).single();
+  const { data: perfilData } = await supabaseClient
+    .from('profiles').select('full_name, phone, is_admin').eq('id', usuario.id).single();
+  perfil = perfilData;
   document.getElementById('user-nome').textContent = (perfil && perfil.full_name) || usuario.email;
   if(perfil && perfil.is_admin){
     document.getElementById('user-admin-badge').innerHTML = '<span class="badge-admin">admin</span>';
@@ -42,6 +44,7 @@ function escapeHtml(s){
   if(new Date() > PRAZO_PEDIDOS){
     document.getElementById('cutoff-banner').style.display = 'block';
     document.getElementById('area-pedido').style.display = 'none';
+    document.getElementById('btn-abrir-carrinho').style.display = 'none';
     return;
   }
 
@@ -49,7 +52,6 @@ function escapeHtml(s){
   await carregarProdutos();
   await carregarNumerosReservados();
   renderProdutos();
-  selecionarProduto(Object.keys(produtos)[0]);
   renderCarrinho();
 })();
 
@@ -57,6 +59,19 @@ document.getElementById('btn-sair').addEventListener('click', async ()=>{
   await supabaseClient.auth.signOut();
   window.location.href = 'index.html';
 });
+
+// ---------------- carrinho: abrir/fechar painel ----------------
+function abrirCarrinho(){
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('open');
+}
+function fecharCarrinho(){
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+}
+document.getElementById('btn-abrir-carrinho').addEventListener('click', abrirCarrinho);
+document.getElementById('btn-fechar-carrinho').addEventListener('click', fecharCarrinho);
+document.getElementById('cart-overlay').addEventListener('click', fecharCarrinho);
 
 // ---------------- produtos ----------------
 async function carregarProdutos(){
@@ -91,9 +106,14 @@ function selecionarProduto(id){
   produtoAtual = id;
   numeroSelecionado = null;
   document.querySelectorAll('.product-card').forEach(c=>c.classList.toggle('selected', c.dataset.produto===id));
+  document.getElementById('config-peca').style.display = 'block';
+  document.getElementById('config-titulo').textContent = produtos[id].nome;
   document.getElementById('numero-wrap').style.display = produtos[id].tem_numero ? 'block' : 'none';
   document.getElementById('f-preco').textContent = fmtBRL(produtos[id].preco);
+  document.getElementById('f-nomecamisa').value = '';
+  document.getElementById('num-warn').textContent = '';
   renderNumeros();
+  document.getElementById('config-peca').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
 function numerosNoCarrinho(){
@@ -101,7 +121,7 @@ function numerosNoCarrinho(){
 }
 
 function renderNumeros(){
-  if(!produtos[produtoAtual] || !produtos[produtoAtual].tem_numero) return;
+  if(!produtoAtual || !produtos[produtoAtual] || !produtos[produtoAtual].tem_numero) return;
   const noCarrinho = new Set(numerosNoCarrinho());
   const grid = document.getElementById('num-grid');
   let html = '';
@@ -130,8 +150,8 @@ function salvarCarrinhoLocal(){
 }
 
 function atualizarCartBadge(){
-  const badge = document.getElementById('cart-badge');
-  if(carrinho.length>0){ badge.style.display='inline'; badge.textContent = carrinho.length; }
+  const badge = document.getElementById('cart-fab-count');
+  if(carrinho.length>0){ badge.style.display='flex'; badge.textContent = carrinho.length; }
   else { badge.style.display='none'; }
 }
 
@@ -163,6 +183,7 @@ document.getElementById('btn-add-carrinho').addEventListener('click', ()=>{
   renderCarrinho();
   atualizarCartBadge();
   showToast('Peça adicionada ao carrinho!');
+  abrirCarrinho();
 });
 
 function removerDoCarrinho(idx){
@@ -176,7 +197,7 @@ function removerDoCarrinho(idx){
 function renderCarrinho(){
   const el = document.getElementById('cart-list');
   if(carrinho.length===0){
-    el.innerHTML = '<div class="cart-empty">Seu carrinho está vazio. Escolha uma peça acima.</div>';
+    el.innerHTML = '<div class="cart-empty">Seu carrinho está vazio. Escolha uma peça para começar.</div>';
   } else {
     el.innerHTML = carrinho.map((it,idx)=>{
       const numTxt = it.numero!=null ? ` · Nº ${it.numero}` : '';
@@ -213,17 +234,17 @@ document.querySelectorAll('.payment-option').forEach(op=>{
 });
 
 // ---------------- finalizar pedido ----------------
+// Nome e contato já vêm do cadastro (perfil) — a pessoa não precisa digitar de novo.
 document.getElementById('btn-finalizar').addEventListener('click', async ()=>{
   const btn = document.getElementById('btn-finalizar');
   const errEl = document.getElementById('checkout-error');
   errEl.textContent = '';
 
-  const comprador = document.getElementById('f-comprador').value.trim();
-  const contato = document.getElementById('f-contato').value.trim();
-
   if(carrinho.length===0){ errEl.textContent = 'Seu carrinho está vazio.'; return; }
-  if(!comprador){ errEl.textContent = 'Informe o nome de quem está comprando.'; return; }
   if(!metodoPagamento){ errEl.textContent = 'Escolha a forma de pagamento.'; return; }
+
+  const comprador = (perfil && perfil.full_name) || '';
+  const contato = (perfil && perfil.phone) || '';
 
   btn.disabled = true; btn.textContent = 'Enviando...';
 
@@ -250,11 +271,10 @@ document.getElementById('btn-finalizar').addEventListener('click', async ()=>{
     renderCarrinho();
     btn.disabled = false; btn.textContent = 'Finalizar pedido';
     showToast('Pedido registrado! Combine o pagamento em dinheiro com a liderança do time.');
-    document.getElementById('f-comprador').value = '';
-    document.getElementById('f-contato').value = '';
     document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected'));
     document.getElementById('standby-note').style.display = 'none';
     metodoPagamento = null;
+    fecharCarrinho();
     await carregarNumerosReservados();
     renderNumeros();
     return;

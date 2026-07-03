@@ -49,15 +49,8 @@
       <!-- LOGIN -->
       <form class="auth-form active" id="form-login" novalidate>
         <div class="field">
-          <label for="login-email">E-mail</label>
-          <input type="email" id="login-email" placeholder="seuemail@exemplo.com" autocomplete="email" required>
-        </div>
-        <div class="field">
-          <label for="login-senha">Senha</label>
-          <input type="password" id="login-senha" placeholder="Sua senha" autocomplete="current-password" required>
-        </div>
-        <div class="auth-form-forgot">
-          <a id="link-esqueci-senha">Esqueci minha senha</a>
+          <label for="login-telefone">WhatsApp</label>
+          <input type="tel" id="login-telefone" placeholder="(31) 90000-0000" autocomplete="tel" inputmode="tel" required>
         </div>
         <div class="field-error" id="login-error"></div>
         <button type="submit" class="btn btn-primary" id="btn-login">Entrar</button>
@@ -71,16 +64,8 @@
           <input type="text" id="cad-nome" placeholder="Como podemos te chamar" autocomplete="name" required>
         </div>
         <div class="field">
-          <label for="cad-telefone">WhatsApp / Contato</label>
-          <input type="text" id="cad-telefone" placeholder="(31) 90000-0000" autocomplete="tel" required>
-        </div>
-        <div class="field">
-          <label for="cad-email">E-mail</label>
-          <input type="email" id="cad-email" placeholder="seuemail@exemplo.com" autocomplete="email" required>
-        </div>
-        <div class="field">
-          <label for="cad-senha">Senha <span class="hint">mínimo de 6 caracteres</span></label>
-          <input type="password" id="cad-senha" placeholder="Crie uma senha" autocomplete="new-password" required minlength="6">
+          <label for="cad-telefone">WhatsApp</label>
+          <input type="tel" id="cad-telefone" placeholder="(31) 90000-0000" autocomplete="tel" inputmode="tel" required>
         </div>
         <div class="field-error" id="cadastro-error"></div>
         <button type="submit" class="btn btn-primary" id="btn-cadastro">Criar conta</button>

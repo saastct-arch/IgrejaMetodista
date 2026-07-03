@@ -18,13 +18,23 @@ function showToast(msg, isError){
   setTimeout(()=>t.classList.remove('show'),2600);
 }
 
-// Mensagens de erro do Supabase em português
+// O login é só com WhatsApp (sem senha visível pro usuário). Por baixo dos
+// panos, a conta continua sendo e-mail+senha no Supabase Auth — só que
+// e-mail e senha são derivados de forma determinística a partir do próprio
+// número de telefone, então a pessoa nunca precisa digitá-los.
+function credenciaisPorTelefone(telefone){
+  const digitos = (telefone || '').replace(/\D/g, '');
+  return {
+    digitos,
+    email: `wa${digitos}@metodistatimoteo.app`,
+    senha: `tm-${digitos}-uniforme`,
+  };
+}
+
 function traduzirErro(msg){
   const mapa = {
-    'Invalid login credentials':'E-mail ou senha incorretos.',
-    'User already registered':'Já existe uma conta com esse e-mail. Tente entrar.',
-    'Email not confirmed':'Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada.',
-    'Password should be at least 6 characters':'A senha precisa ter no mínimo 6 caracteres.',
+    'Invalid login credentials':'Não encontramos uma conta com esse WhatsApp. Confira o número ou crie uma conta.',
+    'User already registered':'Já existe uma conta com esse WhatsApp. Tente entrar.',
   };
   return mapa[msg] || msg;
 }
@@ -42,8 +52,13 @@ document.getElementById('form-login').addEventListener('submit', async (e)=>{
   const errEl = document.getElementById('login-error');
   errEl.textContent='';
 
-  const email = document.getElementById('login-email').value.trim();
-  const senha = document.getElementById('login-senha').value;
+  const telefone = document.getElementById('login-telefone').value.trim();
+  const { digitos, email, senha } = credenciaisPorTelefone(telefone);
+
+  if(digitos.length < 10){
+    errEl.textContent = 'Digite um WhatsApp válido, com DDD.';
+    return;
+  }
 
   btn.disabled = true; btn.textContent = 'Entrando...';
   const { error } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
@@ -65,15 +80,14 @@ document.getElementById('form-cadastro').addEventListener('submit', async (e)=>{
 
   const nome = document.getElementById('cad-nome').value.trim();
   const telefone = document.getElementById('cad-telefone').value.trim();
-  const email = document.getElementById('cad-email').value.trim();
-  const senha = document.getElementById('cad-senha').value;
+  const { digitos, email, senha } = credenciaisPorTelefone(telefone);
 
-  if(!nome || !telefone){
-    errEl.textContent = 'Preencha nome e contato.';
+  if(!nome){
+    errEl.textContent = 'Informe seu nome completo.';
     return;
   }
-  if(senha.length < 6){
-    errEl.textContent = 'A senha precisa ter no mínimo 6 caracteres.';
+  if(digitos.length < 10){
+    errEl.textContent = 'Digite um WhatsApp válido, com DDD.';
     return;
   }
 
@@ -94,32 +108,14 @@ document.getElementById('form-cadastro').addEventListener('submit', async (e)=>{
     return;
   }
 
-  // A conta já é confirmada automaticamente no banco (sem precisar clicar
-  // em link de e-mail); só falta entrar com a senha que acabou de criar.
+  // A conta já é confirmada automaticamente no banco; só falta entrar.
   const { error: loginError } = await supabaseClient.auth.signInWithPassword({ email, password: senha });
   btn.disabled = false; btn.textContent = 'Criar conta';
 
   if(loginError){
-    showToast('Conta criada! Você já pode entrar com seu e-mail e senha.');
+    showToast('Conta criada! Toque em "Entrar" e digite seu WhatsApp.');
     ativarAba('login');
     return;
   }
   window.location.href = 'pedido.html';
-});
-
-// ---- esqueci minha senha ----
-document.getElementById('link-esqueci-senha').addEventListener('click', async ()=>{
-  const email = document.getElementById('login-email').value.trim();
-  if(!email){
-    document.getElementById('login-error').textContent = 'Digite seu e-mail acima e clique em "Esqueci minha senha" novamente.';
-    return;
-  }
-  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.href.replace(/index\.html.*$/, 'redefinir-senha.html')
-  });
-  if(error){
-    showToast(traduzirErro(error.message), true);
-  } else {
-    showToast('Enviamos um link de redefinição de senha para o seu e-mail.');
-  }
 });

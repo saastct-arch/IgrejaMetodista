@@ -20,7 +20,7 @@
       <span class="name">Metodista Timóteo F.C.</span>
     </div>
     <nav class="site-header-nav">
-      <a href="pedido.html" class="active">Montar pedido <span class="cart-count" id="cart-badge" style="display:none;">0</span></a>
+      <a href="pedido.html" class="active">Montar pedido</a>
       <a href="meus-pedidos.html">Meus Pedidos</a>
       <a href="resumo.html">Resumo</a>
     </nav>
@@ -38,83 +38,86 @@
   </div>
 
   <div id="area-pedido">
-    <div class="card" style="margin-bottom:16px;">
+    <div class="card">
       <p class="card-title">Escolha a peça</p>
       <div class="products" id="products-grid"></div>
-
-      <div>
-        <div class="field">
-          <label>Tamanho</label>
-          <select id="f-tamanho">
-            <option>PP</option><option>P</option><option selected>M</option>
-            <option>G</option><option>GG</option><option>XG</option><option>XXG</option>
-          </select>
-        </div>
-        <div class="field">
-          <label>Nome na camisa <span class="hint">como deve ser impresso</span></label>
-          <input type="text" id="f-nomecamisa" placeholder="Ex.: SILVA">
-        </div>
-
-        <div class="field" id="numero-wrap">
-          <label>Número <span class="hint">de 2 a 99 · números já reservados ficam bloqueados</span></label>
-          <div class="num-grid" id="num-grid"></div>
-          <div class="num-legend">
-            <span><i class="dot livre"></i>Livre</span>
-            <span><i class="dot ocupado"></i>Já reservado</span>
-            <span><i class="dot sel"></i>Selecionado</span>
-          </div>
-          <div class="warn" id="num-warn"></div>
-        </div>
-
-        <div class="total-row">
-          <span class="total-label">Valor desta peça</span>
-          <span class="total-value" id="f-preco">R$ 0,00</span>
-        </div>
-
-        <button class="btn btn-outline" id="btn-add-carrinho">+ Adicionar ao carrinho</button>
-      </div>
     </div>
 
-    <div class="card">
-      <p class="card-title">Carrinho</p>
-      <div id="cart-list"></div>
+    <div class="card" id="config-peca" style="display:none;">
+      <p class="card-title" id="config-titulo">Configurar peça</p>
+      <div class="field">
+        <label>Tamanho</label>
+        <select id="f-tamanho">
+          <option>PP</option><option>P</option><option selected>M</option>
+          <option>G</option><option>GG</option><option>XG</option><option>XXG</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Nome na camisa <span class="hint">como deve ser impresso</span></label>
+        <input type="text" id="f-nomecamisa" placeholder="Ex.: SILVA">
+      </div>
+
+      <div class="field" id="numero-wrap">
+        <label>Número <span class="hint">de 2 a 99 · números já reservados ficam bloqueados</span></label>
+        <div class="num-grid" id="num-grid"></div>
+        <div class="num-legend">
+          <span><i class="dot livre"></i>Livre</span>
+          <span><i class="dot ocupado"></i>Já reservado</span>
+          <span><i class="dot sel"></i>Selecionado</span>
+        </div>
+        <div class="warn" id="num-warn"></div>
+      </div>
+
       <div class="total-row">
-        <span class="total-label">Total do carrinho</span>
-        <span class="total-value" id="cart-total">R$ 0,00</span>
+        <span class="total-label">Valor desta peça</span>
+        <span class="total-value" id="f-preco">R$ 0,00</span>
       </div>
 
-      <div id="checkout-area" style="display:none;">
-        <div class="field">
-          <label>Nome de quem está comprando</label>
-          <input type="text" id="f-comprador" placeholder="Nome completo">
-        </div>
-        <div class="field">
-          <label>WhatsApp / Contato</label>
-          <input type="text" id="f-contato" placeholder="(31) 90000-0000">
-        </div>
-
-        <p class="card-title" style="margin-top:22px;">Forma de pagamento</p>
-        <div class="payment-options">
-          <div class="payment-option" data-metodo="mercado_pago" id="op-mp">
-            <div class="po-title">Cartão / Pix (Mercado Pago)</div>
-            <div class="po-desc">Pagamento online, confirmado automaticamente.</div>
-          </div>
-          <div class="payment-option" data-metodo="dinheiro" id="op-dinheiro">
-            <div class="po-title">Dinheiro</div>
-            <div class="po-desc">Combine com a liderança do time. O pedido fica reservado, aguardando confirmação do administrador.</div>
-          </div>
-        </div>
-        <div class="standby-note" id="standby-note" style="display:none;">
-          Seu pedido ficará com status <b>aguardando confirmação</b> até que o administrador confirme o recebimento do valor em dinheiro.
-        </div>
-
-        <div class="warn" id="checkout-error"></div>
-        <button class="btn btn-primary" id="btn-finalizar" style="margin-top:16px;">Finalizar pedido</button>
-      </div>
+      <button class="btn btn-outline" id="btn-add-carrinho">+ Adicionar ao carrinho</button>
     </div>
   </div>
 
+  <button class="cart-fab" id="btn-abrir-carrinho" title="Ver carrinho" aria-label="Ver carrinho">
+    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+    <span class="cart-fab-count" id="cart-fab-count" style="display:none;">0</span>
+  </button>
+
 </main>
+
+<div class="drawer-overlay" id="cart-overlay"></div>
+<aside class="cart-drawer" id="cart-drawer">
+  <div class="cart-drawer-header">
+    <p class="card-title" style="margin:0;">Seu carrinho</p>
+    <button class="icon-btn" id="btn-fechar-carrinho" aria-label="Fechar carrinho">&times;</button>
+  </div>
+  <div class="cart-drawer-body">
+    <div id="cart-list"></div>
+    <div class="total-row">
+      <span class="total-label">Total do carrinho</span>
+      <span class="total-value" id="cart-total">R$ 0,00</span>
+    </div>
+
+    <div id="checkout-area" style="display:none;">
+      <p class="card-title" style="margin-top:22px;">Forma de pagamento</p>
+      <div class="payment-options">
+        <div class="payment-option" data-metodo="mercado_pago" id="op-mp">
+          <div class="po-title">Cartão / Pix (Mercado Pago)</div>
+          <div class="po-desc">Pagamento online, confirmado automaticamente.</div>
+        </div>
+        <div class="payment-option" data-metodo="dinheiro" id="op-dinheiro">
+          <div class="po-title">Dinheiro</div>
+          <div class="po-desc">Combine com a liderança do time. O pedido fica reservado, aguardando confirmação do administrador.</div>
+        </div>
+      </div>
+      <div class="standby-note" id="standby-note" style="display:none;">
+        Seu pedido ficará com status <b>aguardando confirmação</b> até que o administrador confirme o recebimento do valor em dinheiro.
+      </div>
+
+      <div class="warn" id="checkout-error"></div>
+      <button class="btn btn-primary" id="btn-finalizar" style="margin-top:16px;">Finalizar pedido</button>
+    </div>
+  </div>
+</aside>
 
 <div class="toast" id="toast"></div>
 
