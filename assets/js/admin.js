@@ -25,6 +25,7 @@ const STATUS_LABEL = {
   cancelado: 'cancelado',
 };
 const METODO_LABEL = { mercado_pago: 'Cartão / Pix', dinheiro: 'Dinheiro' };
+const GENERO_LABEL = { masculina: 'Masculina', feminina: 'Feminina', infantil: 'Infantil' };
 
 (async function init(){
   const { data:{ session } } = await supabaseClient.auth.getSession();
@@ -55,7 +56,7 @@ document.getElementById('btn-exportar').addEventListener('click', exportarCSV);
 async function carregarPedidos(){
   const { data, error } = await supabaseClient
     .from('orders')
-    .select('id, buyer_name, contact, payment_method, status, valor_total, valor_pago, created_at, order_items(nome_camisa, tamanho, numero, produto, reservado, products(nome))')
+    .select('id, buyer_name, contact, payment_method, status, valor_total, valor_pago, created_at, order_items(nome_camisa, tamanho, genero, numero, produto, reservado, products(nome))')
     .order('created_at', { ascending: false });
 
   if(error){
@@ -113,9 +114,10 @@ function renderCard(p){
   const itensHtml = (p.order_items||[]).map(it=>{
     const numTxt = it.numero != null ? `<span class="order-item-tag">Nº ${it.numero}</span>` : `<span class="order-item-tag">TAM ${it.tamanho}</span>`;
     const nomeProduto = it.products ? it.products.nome : it.produto;
+    const generoLabel = GENERO_LABEL[it.genero] || it.genero;
     const conflito = it.numero != null && ['pago','standby'].includes(p.status) && !it.reservado
       ? '<span class="conflict-tag">conflito de número</span>' : '';
-    return `<div class="order-item-row"><span>${escapeHtml(it.nome_camisa)} <span style="color:#999;">· ${escapeHtml(nomeProduto)}${it.numero!=null?` · Tam. ${it.tamanho}`:''}</span>${conflito}</span>${numTxt}</div>`;
+    return `<div class="order-item-row"><span>${escapeHtml(it.nome_camisa)} <span style="color:#999;">· ${escapeHtml(nomeProduto)} · ${generoLabel} · Tam. ${it.tamanho}</span>${conflito}</span>${numTxt}</div>`;
   }).join('');
 
   const statusOptions = Object.keys(STATUS_LABEL).map(s=>
@@ -204,13 +206,14 @@ async function salvarValorPago(orderId){
 }
 
 function exportarCSV(){
-  const header = ['Comprador','Contato','Status','Forma de pagamento','Valor total','Valor pago','Produto','Nome na camisa','Numero','Tamanho','Data'];
+  const header = ['Comprador','Contato','Status','Forma de pagamento','Valor total','Valor pago','Produto','Nome na camisa','Genero','Tamanho','Numero','Data'];
   const rows = [];
   todosPedidos.forEach(p=>{
     (p.order_items||[]).forEach(it=>{
       rows.push([
         p.buyer_name, p.contact, STATUS_LABEL[p.status]||p.status, METODO_LABEL[p.payment_method]||p.payment_method,
-        p.valor_total, p.valor_pago, it.products ? it.products.nome : it.produto, it.nome_camisa, it.numero ?? '', it.tamanho, p.created_at
+        p.valor_total, p.valor_pago, it.products ? it.products.nome : it.produto, it.nome_camisa,
+        GENERO_LABEL[it.genero] || it.genero, it.tamanho, it.numero ?? '', p.created_at
       ]);
     });
   });

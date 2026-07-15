@@ -1,9 +1,17 @@
 const PRAZO_PEDIDOS = new Date('2026-07-27T23:59:59-03:00');
 
+const TAMANHOS_POR_GENERO = {
+  masculina: ['P','M','G','GG','EG','EGG'],
+  feminina:  ['P','M','G','GG'],
+  infantil:  ['2A','4A','6A','8A','10A','12A','14A'],
+};
+const GENERO_LABEL = { masculina: 'Masculina', feminina: 'Feminina', infantil: 'Infantil' };
+
 let usuario = null;
 let perfil = null;
 let produtos = {};          // { completo: {nome,descricao,preco,tem_numero}, torcida: {...} }
 let produtoAtual = null;
+let generoAtual = null;
 let numeroSelecionado = null;
 let numerosReservadosDb = new Set();
 let carrinho = [];
@@ -105,6 +113,7 @@ function renderProdutos(){
 function selecionarProduto(id){
   produtoAtual = id;
   numeroSelecionado = null;
+  generoAtual = null;
   document.querySelectorAll('.product-card').forEach(c=>c.classList.toggle('selected', c.dataset.produto===id));
   document.getElementById('config-peca').style.display = 'block';
   document.getElementById('config-titulo').textContent = produtos[id].nome;
@@ -112,9 +121,29 @@ function selecionarProduto(id){
   document.getElementById('f-preco').textContent = fmtBRL(produtos[id].preco);
   document.getElementById('f-nomecamisa').value = '';
   document.getElementById('num-warn').textContent = '';
+  document.querySelectorAll('.genero-btn').forEach(b=>b.classList.remove('selected'));
+  resetTamanhoSelect();
   renderNumeros();
   document.getElementById('config-peca').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
+
+function resetTamanhoSelect(){
+  const sel = document.getElementById('f-tamanho');
+  sel.innerHTML = '<option value="">Escolha o gênero primeiro</option>';
+  sel.disabled = true;
+}
+
+document.querySelectorAll('.genero-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    generoAtual = btn.dataset.genero;
+    document.querySelectorAll('.genero-btn').forEach(b=>b.classList.toggle('selected', b===btn));
+
+    const sel = document.getElementById('f-tamanho');
+    const tamanhos = TAMANHOS_POR_GENERO[generoAtual];
+    sel.innerHTML = '<option value="">Selecione</option>' + tamanhos.map(t=>`<option value="${t}">${t}</option>`).join('');
+    sel.disabled = false;
+  });
+});
 
 function numerosNoCarrinho(){
   return carrinho.filter(it=>it.produto==='completo' && it.numero!=null).map(it=>it.numero);
@@ -160,6 +189,8 @@ document.getElementById('btn-add-carrinho').addEventListener('click', ()=>{
   const nomeCamisa = document.getElementById('f-nomecamisa').value.trim();
   const p = produtos[produtoAtual];
 
+  if(!generoAtual){ showToast('Escolha o gênero da camisa'); return; }
+  if(!tamanho){ showToast('Escolha o tamanho'); return; }
   if(!nomeCamisa){ showToast('Informe o nome que vai na camisa'); return; }
 
   let numero = null;
@@ -174,7 +205,7 @@ document.getElementById('btn-add-carrinho').addEventListener('click', ()=>{
     numero = numeroSelecionado;
   }
 
-  carrinho.push({ produto: produtoAtual, tamanho, nomeCamisa, numero, valor: p.preco });
+  carrinho.push({ produto: produtoAtual, genero: generoAtual, tamanho, nomeCamisa, numero, valor: p.preco });
   salvarCarrinhoLocal();
 
   document.getElementById('f-nomecamisa').value = '';
@@ -202,10 +233,11 @@ function renderCarrinho(){
     el.innerHTML = carrinho.map((it,idx)=>{
       const numTxt = it.numero!=null ? ` · Nº ${it.numero}` : '';
       const nomeProduto = produtos[it.produto] ? produtos[it.produto].nome : it.produto;
+      const generoLabel = GENERO_LABEL[it.genero] || it.genero;
       return `<div class="cart-item">
         <div>
           <div class="cart-item-name">${escapeHtml(it.nomeCamisa)}</div>
-          <div class="cart-item-meta">${escapeHtml(nomeProduto)} · Tam. ${it.tamanho}${numTxt}</div>
+          <div class="cart-item-meta">${escapeHtml(nomeProduto)} · ${generoLabel} · Tam. ${it.tamanho}${numTxt}</div>
         </div>
         <div class="cart-item-row">
           <span class="cart-item-price">${fmtBRL(it.valor)}</span>
@@ -248,7 +280,7 @@ document.getElementById('btn-finalizar').addEventListener('click', async ()=>{
 
   btn.disabled = true; btn.textContent = 'Enviando...';
 
-  const itens = carrinho.map(it=>({ produto: it.produto, tamanho: it.tamanho, nomeCamisa: it.nomeCamisa, numero: it.numero }));
+  const itens = carrinho.map(it=>({ produto: it.produto, genero: it.genero, tamanho: it.tamanho, nomeCamisa: it.nomeCamisa, numero: it.numero }));
 
   const { data, error } = await supabaseClient.rpc('criar_pedido', {
     p_buyer_name: comprador,

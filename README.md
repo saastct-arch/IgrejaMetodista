@@ -1,15 +1,15 @@
 # Metodista Timóteo F.C. · Loja de Uniformes
 
-Site de vendas dos uniformes do time Metodista Timóteo F.C., da Igreja Metodista (Uniforme Equipe e Camisa Torcida).
+Site de vendas dos uniformes do time Metodista Timóteo F.C., da Igreja Metodista (Uniforme Completo e Camisa Torcida).
 
 ## Status atual
 
 - `index.html` — login e cadastro **só com nome e WhatsApp, sem e-mail nem senha visíveis**. Por baixo dos panos a conta continua sendo e-mail+senha no Supabase Auth (é o que sustenta toda a RLS já construída), só que e-mail e senha são derivados de forma determinística a partir do número de telefone (`wa<dígitos>@metodistatimoteo.app` / `tm-<dígitos>-uniforme`) — a pessoa nunca digita isso. Cadastro também não exige clique em link de confirmação por e-mail (trigger `auto_confirm_email_on_signup`).
-- `pedido.html` — Montar pedido: dois botões (Uniforme Completo / Camisa Torcida) que revelam a configuração da peça (tamanho, nome, número 2–99 quando aplicável). Carrinho vira um painel lateral (estilo FARM Rio), aberto por um botão flutuante com contador. Nome/WhatsApp do comprador são preenchidos automaticamente com os dados do cadastro — não precisa digitar de novo no checkout.
+- `pedido.html` — Montar pedido: dois botões (Uniforme Completo / Camisa Torcida) que revelam a configuração da peça — **gênero** (Masculina / Feminina / Infantil) e, dependendo dele, o **tamanho**: Masculina (P, M, G, GG, EG, EGG), Feminina (P, M, G, GG — sem EG/EGG), Infantil (2A, 4A, 6A, 8A, 10A, 12A, 14A). A combinação gênero+tamanho é validada tanto na tela quanto na função do banco que cria o pedido (ex.: não dá pra escolher Feminina + EG). Carrinho vira um painel lateral (estilo FARM Rio), aberto por um botão flutuante com contador. Nome/WhatsApp do comprador são preenchidos automaticamente com os dados do cadastro — não precisa digitar de novo no checkout.
 - `pedido-confirmado.html` — página de retorno do Mercado Pago, mostra o status do pagamento.
 - `meus-pedidos.html` — histórico dos próprios pedidos do comprador, com status e botão para retomar um pagamento pendente.
-- `resumo.html` — transparência financeira: totais agregados de todos os compradores (pedidos, arrecadado, a receber, peças por tamanho), sem expor dados pessoais. Visível a qualquer usuário logado.
-- `admin.html` — painel restrito aos e-mails admin: lista todos os pedidos com contato via WhatsApp, confirma pagamento em dinheiro, edita status/valor pago, cancela pedidos, alerta conflito de número e exporta CSV.
+- `resumo.html` — transparência financeira: totais agregados de todos os compradores (pedidos, arrecadado, a receber, peças por tamanho agrupadas por gênero), sem expor dados pessoais. Visível a qualquer usuário logado.
+- `admin.html` — painel restrito aos e-mails admin: lista todos os pedidos com contato via WhatsApp, gênero/tamanho de cada peça, confirma pagamento em dinheiro, edita status/valor pago, cancela pedidos, alerta conflito de número e exporta CSV (agora com a coluna "Genero" também).
 
 O link "Admin" só aparece na navegação para quem tem `is_admin = true`; a página em si também redireciona quem não é admin de volta para `pedido.html`.
 

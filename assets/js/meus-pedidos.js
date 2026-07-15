@@ -25,6 +25,7 @@ const STATUS_LABEL = {
   cancelado: 'Pagamento não aprovado',
 };
 const METODO_LABEL = { mercado_pago: 'Cartão / Pix', dinheiro: 'Dinheiro' };
+const GENERO_LABEL = { masculina: 'Masculina', feminina: 'Feminina', infantil: 'Infantil' };
 
 (async function init(){
   const { data:{ session } } = await supabaseClient.auth.getSession();
@@ -51,7 +52,7 @@ async function carregarPedidos(){
   const el = document.getElementById('lista-pedidos');
   const { data: pedidos, error } = await supabaseClient
     .from('orders')
-    .select('id, payment_method, status, valor_total, valor_pago, created_at, order_items(nome_camisa, tamanho, numero, produto, products(nome))')
+    .select('id, payment_method, status, valor_total, valor_pago, created_at, order_items(nome_camisa, tamanho, genero, numero, produto, products(nome))')
     .eq('user_id', usuario.id)
     .order('created_at', { ascending: false });
 
@@ -72,7 +73,8 @@ async function carregarPedidos(){
     const itensHtml = (p.order_items||[]).map(it=>{
       const numTxt = it.numero != null ? `<span class="order-item-tag">Nº ${it.numero}</span>` : `<span class="order-item-tag">TAM ${it.tamanho}</span>`;
       const nomeProduto = it.products ? it.products.nome : it.produto;
-      return `<div class="order-item-row"><span>${escapeHtml(it.nome_camisa)} <span style="color:#999;">· ${escapeHtml(nomeProduto)}${it.numero!=null?` · Tam. ${it.tamanho}`:''}</span></span>${numTxt}</div>`;
+      const generoLabel = GENERO_LABEL[it.genero] || it.genero;
+      return `<div class="order-item-row"><span>${escapeHtml(it.nome_camisa)} <span style="color:#999;">· ${escapeHtml(nomeProduto)} · ${generoLabel} · Tam. ${it.tamanho}</span></span>${numTxt}</div>`;
     }).join('');
 
     let nota = '';

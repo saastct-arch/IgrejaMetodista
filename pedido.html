@@ -46,10 +46,17 @@
     <div class="card" id="config-peca" style="display:none;">
       <p class="card-title" id="config-titulo">Configurar peça</p>
       <div class="field">
+        <label>Gênero</label>
+        <div class="genero-options" id="genero-options">
+          <button type="button" class="genero-btn" data-genero="masculina">Masculina</button>
+          <button type="button" class="genero-btn" data-genero="feminina">Feminina</button>
+          <button type="button" class="genero-btn" data-genero="infantil">Infantil</button>
+        </div>
+      </div>
+      <div class="field">
         <label>Tamanho</label>
-        <select id="f-tamanho">
-          <option>PP</option><option>P</option><option selected>M</option>
-          <option>G</option><option>GG</option><option>XG</option><option>XXG</option>
+        <select id="f-tamanho" disabled>
+          <option value="">Escolha o gênero primeiro</option>
         </select>
       </div>
       <div class="field">

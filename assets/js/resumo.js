@@ -46,9 +46,30 @@ function fmtBRL(v){
   if(tamanhoError || !porTamanho || porTamanho.length === 0){
     wrap.innerHTML = '<span style="color:#999;font-size:13px;">Nenhum pedido ainda</span>';
   } else {
-    const ordem = ['PP','P','M','G','GG','XG','XXG'];
-    const ordenado = [...porTamanho].sort((a,b)=> ordem.indexOf(a.tamanho) - ordem.indexOf(b.tamanho));
-    wrap.innerHTML = ordenado.map(s => `<div class="size-chip">${s.tamanho} <b>${s.quantidade}</b></div>`).join('');
+    const GENERO_LABEL = { masculina: 'Masculina', feminina: 'Feminina', infantil: 'Infantil' };
+    const ORDEM_TAMANHO = {
+      masculina: ['P','M','G','GG','EG','EGG'],
+      feminina: ['P','M','G','GG'],
+      infantil: ['2A','4A','6A','8A','10A','12A','14A'],
+    };
+    const ORDEM_GENERO = ['masculina','feminina','infantil'];
+
+    const porGenero = {};
+    porTamanho.forEach(s=>{
+      (porGenero[s.genero] = porGenero[s.genero] || []).push(s);
+    });
+
+    wrap.innerHTML = ORDEM_GENERO.filter(g => porGenero[g]).map(g=>{
+      const ordem = ORDEM_TAMANHO[g] || [];
+      const chips = [...porGenero[g]]
+        .sort((a,b)=> ordem.indexOf(a.tamanho) - ordem.indexOf(b.tamanho))
+        .map(s => `<div class="size-chip">${s.tamanho} <b>${s.quantidade}</b></div>`)
+        .join('');
+      return `<div class="size-genero-group">
+        <div class="size-genero-label">${GENERO_LABEL[g] || g}</div>
+        <div class="size-breakdown">${chips}</div>
+      </div>`;
+    }).join('');
   }
 })();
 
