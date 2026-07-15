@@ -24,7 +24,7 @@ Backend: Supabase (autenticação, banco de dados com Row Level Security, e Edge
 
 **Credenciais do Mercado Pago: PRODUÇÃO ATIVA (02/07/2026).** O `MP_ACCESS_TOKEN` na tabela `app_secrets` é o Access Token real da conta do time — pagamentos por Cartão/Pix a partir de agora cobram dinheiro de verdade. O token nunca fica em nenhum arquivo do repositório, só no banco, e só o `service_role` das Edge Functions consegue lê-lo. Public Key, Client ID e Client Secret enviados junto **não foram armazenados**, porque a integração atual (Checkout Pro) só precisa do Access Token.
 
-Prazo de pedidos: bloqueado automaticamente após 27/07/2026, tanto na tela quanto na função do banco que cria o pedido.
+Prazo de pedidos: bloqueado automaticamente após 20/07/2026 às 23:59, tanto na tela quanto na função do banco que cria o pedido (`criar_pedido`).
 
 ## Segurança (revisão de 02/07/2026)
 
