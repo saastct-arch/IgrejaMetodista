@@ -1,4 +1,4 @@
-const PRAZO_PEDIDOS = new Date('2026-07-20T23:59:59-03:00');
+const PRAZO_PEDIDOS = new Date('2026-07-20T10:20:00-03:00');
 
 const TAMANHOS_POR_GENERO = {
   masculina: ['P','M','G','GG','EG','EGG'],
